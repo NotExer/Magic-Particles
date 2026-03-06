@@ -2,6 +2,10 @@
 
 Aplicacion web interactiva que genera efectos de particulas 3D controlados con gestos de la mano en tiempo real. Utiliza la camara del dispositivo para detectar la mano mediante MediaPipe Hand Landmarker y renderiza distintas visualizaciones con Three.js segun la cantidad de dedos levantados.
 
+## 📺 Preview
+
+**🌐 Visita el sitio:**  [https://portfolio-notexer.vercel.app](https://portfolio-notexer.vercel.app)
+
 ## Tecnologias
 
 - **Three.js** - Renderizado 3D y postprocesado (bloom)
