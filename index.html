@@ -62,10 +62,10 @@
         /* ========== MOBILE RESPONSIVE ========== */
         @media (max-width: 768px) {
             #navbar {
-                top: auto; bottom: 0;
-                border-bottom: none;
-                border-top: 1px solid rgba(0,255,60,0.15);
-                height: 56px;
+                top: 0; bottom: auto;
+                border-bottom: 1px solid rgba(0,255,60,0.15);
+                border-top: none;
+                height: 46px;
                 padding: 0 16px;
             }
             #navbar .brand span { display: none; }
@@ -75,16 +75,17 @@
 
             #video-container {
                 position: fixed;
-                top: 0; left: 0; right: 0;
-                width: 100%; height: 120px;
+                bottom: 0; left: 0; right: 0;
+                top: auto;
+                width: 100%; height: 150px;
                 border-radius: 0;
                 border: none;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
+                border-top: 1px solid rgba(255,255,255,0.1);
                 box-shadow: none;
             }
 
             #status {
-                bottom: 70px;
+                bottom: 160px;
             }
         }
     </style>
@@ -445,7 +446,7 @@
         catch { hl = await HandLandmarker.createFromOptions(vision, opts); }
 
         statusEl.textContent='Cargando';
-        const stream = await navigator.mediaDevices.getUserMedia({video:{width:640,height:480,facingMode:'user'}});
+        const stream = await navigator.mediaDevices.getUserMedia({video:{width:1920,height:1080,facingMode:'user'}});
         video.srcObject=stream; await video.play();
         overlay.width=video.videoWidth; overlay.height=video.videoHeight;
         statusEl.textContent='Listo';
