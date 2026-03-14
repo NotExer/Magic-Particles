@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Magic Particles</title>
     <link rel="icon" type="image/png" href="./icon.png">
     <style>
@@ -56,6 +57,35 @@
             padding: 8px 20px; border-radius: 10px;
             background: rgba(0,0,0,0.7); border: 1px solid #333;
             color: #ffd200; font-size: 0.85rem; z-index: 30;
+        }
+
+        /* ========== MOBILE RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            #navbar {
+                top: auto; bottom: 0;
+                border-bottom: none;
+                border-top: 1px solid rgba(0,255,60,0.15);
+                height: 56px;
+                padding: 0 16px;
+            }
+            #navbar .brand span { display: none; }
+            #navbar .brand img { width: 28px; height: 28px; }
+            #navbar .nav-links a span { display: none; }
+            #navbar .nav-links a svg { width: 24px; height: 24px; }
+
+            #video-container {
+                position: fixed;
+                top: 0; left: 0; right: 0;
+                width: 100%; height: 120px;
+                border-radius: 0;
+                border: none;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                box-shadow: none;
+            }
+
+            #status {
+                bottom: 70px;
+            }
         }
     </style>
     <script type="importmap">
