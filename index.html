@@ -3,45 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Magic Particles</title>
-    <link rel="icon" type="image/png" href="./icon.png">
+    <title>Magic Particles — Gesture Studio</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/project-mark.svg">
     <style>
-        body { margin: 0; overflow: hidden; background: #000; }
-
-        #navbar {
-            position: fixed; top: 0; left: 0; right: 0;
-            height: 50px; z-index: 50;
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0 20px;
-            background: rgba(0,0,0,0.65);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(0,255,60,0.15);
+        :root {
+            color-scheme: dark;
+            --bg: #090a0f;
+            --panel: rgba(22, 23, 31, 0.84);
+            --panel-solid: #171820;
+            --panel-soft: rgba(255,255,255,0.055);
+            --line: rgba(255,255,255,0.11);
+            --text: #f5f5f7;
+            --muted: #9b9ca8;
+            --accent: #a78bfa;
+            --accent-strong: #c4b5fd;
+            --success: #6ee7b7;
+            --warning: #fbbf24;
+            --radius-lg: 18px;
+            --radius-md: 12px;
         }
+        * { box-sizing: border-box; }
+        body { margin: 0; overflow: hidden; background: var(--bg); color: var(--text); font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: -0.01em; }
+        button, a { -webkit-tap-highlight-color: transparent; }
+        button:focus-visible, a:focus-visible { outline: 2px solid var(--accent-strong); outline-offset: 3px; }
+
+        #navbar { position: fixed; top: 0; left: 0; right: 0; height: 64px; z-index: 50; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; background: rgba(9,10,15,0.78); backdrop-filter: blur(22px) saturate(140%); border-bottom: 1px solid var(--line); }
         #navbar .brand {
             display: flex; align-items: center; gap: 10px;
             text-decoration: none; color: #fff;
-            font-family: 'Segoe UI', sans-serif; font-size: 1rem; font-weight: 600;
+            font-size: 0.98rem; font-weight: 650; letter-spacing: -0.02em;
         }
-        #navbar .brand img { width: 32px; height: 32px; border-radius: 6px; }
-        #navbar .nav-links { display: flex; align-items: center; gap: 16px; }
+        #navbar .brand img { width: 34px; height: 34px; border-radius: 10px; box-shadow: 0 0 22px rgba(167,139,250,.24); }
+        #navbar .nav-links { display: flex; align-items: center; gap: 12px; }
         #navbar .nav-links a {
-            color: rgba(255,255,255,0.75); text-decoration: none;
-            font-family: 'Segoe UI', sans-serif; font-size: 0.9rem;
+            color: var(--muted); text-decoration: none; font-size: 0.83rem; font-weight: 550;
             display: flex; align-items: center; gap: 6px;
             transition: color 0.2s;
         }
-        #navbar .nav-links a:hover { color: #00ff3c; }
-        #navbar .nav-links a svg { width: 20px; height: 20px; fill: currentColor; }
+        #navbar .nav-links a:hover { color: var(--text); }
+        #navbar .nav-links a svg { width: 18px; height: 18px; fill: currentColor; }
+
+        #sidebar { position: fixed; top: 64px; bottom: 0; left: 0; width: 250px; z-index: 30; padding: 28px 16px 22px; background: rgba(12,13,19,.78); border-right: 1px solid var(--line); backdrop-filter: blur(20px); }
+        .eyebrow { margin: 0 10px 10px; color: #777987; text-transform: uppercase; letter-spacing: .12em; font-size: .68rem; font-weight: 700; }
+        .scene-nav { display: grid; gap: 5px; }
+        .scene-item { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; min-height: 48px; padding: 7px 10px; color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: var(--radius-md); text-align: left; cursor: pointer; transition: .2s ease; }
+        .scene-item:hover { background: var(--panel-soft); color: var(--text); }
+        .scene-item.active { color: var(--text); background: linear-gradient(100deg, rgba(167,139,250,.18), rgba(167,139,250,.04)); border-color: rgba(167,139,250,.26); }
+        .scene-item .scene-icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: rgba(255,255,255,.07); color: var(--accent-strong); }
+        .scene-item svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+        .scene-item .scene-name { font-size: .84rem; font-weight: 600; }
+        .scene-item .scene-gesture { display: grid; place-items: center; min-width: 23px; height: 23px; padding: 0 5px; border-radius: 7px; color: #bab0e8; background: rgba(167,139,250,.1); font-size: .72rem; font-weight: 700; }
+        .sidebar-foot { position: absolute; right: 16px; bottom: 22px; left: 16px; padding-top: 16px; border-top: 1px solid var(--line); color: #6f707d; font-size: .72rem; line-height: 1.45; }
+        .sidebar-foot b { color: var(--muted); font-weight: 600; }
+
+        #workspace { position: fixed; inset: 64px 0 0 250px; pointer-events: none; z-index: 10; }
+        #workspace-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 30px 32px; }
+        #workspace-head h1 { display: flex; align-items: center; gap: 10px; margin: 0; font-size: 1.3rem; letter-spacing: -.035em; font-weight: 650; }
+        .workspace-icon { width: 28px; height: 28px; }
+        #workspace-head p { margin: 7px 0 0; color: var(--muted); font-size: .83rem; }
+        .live-pill { display: flex; align-items: center; gap: 8px; padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: rgba(18,19,27,.68); color: #bbbcc6; font-size: .72rem; font-weight: 650; }
+        .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--success); box-shadow: 0 0 12px var(--success); }
 
         #video-container {
             position: absolute;
-            top: 60px; right: 3%;
-            width: 260px; height: 195px;
-            border: 2px solid rgba(255,255,255,0.15);
+            top: 104px; right: 32px; width: 282px; height: 212px;
+            border: 1px solid rgba(255,255,255,0.16);
             z-index: 20; background: #000;
-            border-radius: 18px; overflow: hidden;
-            box-shadow: 0 0 30px rgba(0,0,0,0.8);
+            border-radius: var(--radius-lg); overflow: hidden;
+            box-shadow: 0 18px 60px rgba(0,0,0,.42); background: #111218;
         }
+        #video-container::before { content: 'Cámara'; position: absolute; top: 12px; left: 13px; z-index: 2; padding: 4px 7px; border: 1px solid rgba(255,255,255,.13); border-radius: 6px; background: rgba(8,9,13,.58); color: rgba(255,255,255,.8); font-size: .68rem; font-weight: 650; }
+        #video-container::after { content: ''; position: absolute; right: 13px; top: 12px; width: 18px; height: 18px; z-index: 2; background: url('./assets/window-camera.svg') center/contain no-repeat; opacity: .9; }
 
         video { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transform: scaleX(-1); }
         #overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: scaleX(-1); pointer-events: none; }
@@ -52,42 +84,50 @@
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
         }
 
-        #status {
-            position: absolute; bottom: 3%; left: 50%; transform: translateX(-50%);
-            padding: 8px 20px; border-radius: 10px;
-            background: rgba(0,0,0,0.7); border: 1px solid #333;
-            color: #ffd200; font-size: 0.85rem; z-index: 30;
-        }
+        #status { position: absolute; right: 32px; bottom: 28px; padding: 9px 14px; border-radius: 999px; background: rgba(20,21,29,.82); border: 1px solid var(--line); color: var(--warning); font-size: .76rem; font-weight: 600; z-index: 30; box-shadow: 0 10px 30px rgba(0,0,0,.24); }
+        #camera-action { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 35; padding: 11px 16px; border: 1px solid rgba(196,181,253,.4); border-radius: 999px; background: rgba(49,46,129,.82); color: #fff; font: 650 .78rem ui-sans-serif, sans-serif; cursor: pointer; box-shadow: 0 8px 30px rgba(0,0,0,.3); transition: .2s ease; }
+        #camera-action:hover { background: rgba(124,58,237,.9); transform: translate(-50%, -50%) scale(1.03); }
+        #camera-action[hidden] { display: none; }
+        #gesture-hint { position: absolute; bottom: 30px; left: 32px; color: rgba(255,255,255,.64); font-size: .76rem; pointer-events: none; }
+        #gesture-hint kbd { margin: 0 3px; padding: 3px 6px; border: 1px solid var(--line); border-radius: 5px; color: var(--text); background: rgba(255,255,255,.06); font-size: .68rem; }
 
         /* ========== MOBILE RESPONSIVE ========== */
-        @media (max-width: 768px) {
+        @media (max-width: 820px) {
             #navbar {
                 top: 0; bottom: auto;
-                border-bottom: 1px solid rgba(0,255,60,0.15);
+                border-bottom: 1px solid var(--line);
                 border-top: none;
-                height: 46px;
-                padding: 0 16px;
+                height: 58px; padding: 0 16px;
             }
             #navbar .brand span { display: none; }
-            #navbar .brand img { width: 28px; height: 28px; }
+            #navbar .brand img { width: 30px; height: 30px; }
             #navbar .nav-links a span { display: none; }
             #navbar .nav-links a svg { width: 24px; height: 24px; }
 
+            #sidebar { top: 58px; width: 100%; height: 92px; bottom: auto; padding: 10px 12px; border-right: 0; border-bottom: 1px solid var(--line); overflow-x: auto; }
+            .eyebrow, .sidebar-foot { display: none; }
+            .scene-nav { display: flex; min-width: max-content; gap: 6px; }
+            .scene-item { grid-template-columns: 30px 1fr; min-width: 112px; min-height: 68px; padding: 7px; }
+            .scene-item .scene-gesture { display: none; }
+            .scene-item .scene-name { font-size: .72rem; }
+            #workspace { inset: 150px 0 0; }
+            #workspace-head { padding: 20px 18px; }
+            #workspace-head h1 { font-size: 1.1rem; }
+            #gesture-hint { left: 18px; bottom: 420px; }
             #video-container {
                 position: fixed;
-                bottom: 0; left: 0; right: 0;
+                bottom: 0; left: 12px; right: 12px;
                 top: auto;
-                width: 100%; height: 400px;
-                border-radius: 0;
-                border: none;
-                border-top: 1px solid rgba(255,255,255,0.1);
-                box-shadow: none;
+                width: auto; height: 360px; border-radius: var(--radius-lg);
+                border: 1px solid var(--line);
+                box-shadow: 0 18px 50px rgba(0,0,0,.46);
             }
 
             #status {
-                bottom: 160px;
+                bottom: 378px; left: 50%; right: auto; transform: translateX(-50%);
             }
         }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
     </style>
     <script type="importmap">
         { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/" } }
@@ -96,22 +136,43 @@
 <body>
     <nav id="navbar">
         <a class="brand" href="#">
-            <img src="./icon.png" alt="Magic Particles">
+            <img src="./assets/project-mark.svg" alt="Magic Particles">
             <span>Magic Particles</span>
         </a>
         <div class="nav-links">
+            <a href="#" aria-label="Preferencias" title="Preferencias">
+                <svg viewBox="0 0 24 24"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm0-6v2m0 15v2M3.5 12h2m13 0h2M5.3 5.3l1.4 1.4m10.6 10.6 1.4 1.4m0-13.4-1.4 1.4M6.7 17.3l-1.4 1.4"/></svg>
+            </a>
             <a href="https://github.com/NotExer" target="_blank" rel="noopener">
-                <svg viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+                <svg viewBox="0 0 24 24"><path d="M12 3.5a8.5 8.5 0 0 0-2.7 16.56c.43.08.59-.18.59-.4v-1.56c-2.42.53-2.93-1.03-2.93-1.03-.39-.99-.95-1.25-.95-1.25-.79-.54.06-.53.06-.53.88.06 1.35.9 1.35.9.78 1.35 2.05.96 2.55.74.08-.58.31-.97.56-1.2-1.93-.22-3.96-.96-3.96-4.28 0-.95.34-1.72.9-2.33-.09-.22-.39-1.1.09-2.3 0 0 .73-.23 2.4.89a8.3 8.3 0 0 1 4.38 0c1.67-1.12 2.4-.89 2.4-.89.48 1.2.18 2.08.09 2.3.56.61.9 1.38.9 2.33 0 3.33-2.03 4.06-3.97 4.27.31.27.59.81.59 1.64v2.44c0 .22.16.48.6.4A8.5 8.5 0 0 0 12 3.5Z"/></svg>
                 GitHub
             </a>
         </div>
     </nav>
+    <aside id="sidebar" aria-label="Biblioteca de escenas">
+        <p class="eyebrow">Escenas</p>
+        <div class="scene-nav">
+            <button class="scene-item active" data-scene="-1"><span class="scene-icon"><svg viewBox="0 0 24 24"><path d="M5 18.5h.01M9.5 14h.01M15 8h.01M19 4.5h.01M4 20 20 4"/></svg></span><span class="scene-name">Ambiente</span><span class="scene-gesture">—</span></button>
+            <button class="scene-item" data-scene="0"><span class="scene-icon"><svg viewBox="0 0 24 24"><path d="M5 5h14v14H5zM9 5v14M15 5v14M5 9h14M5 15h14"/></svg></span><span class="scene-name">Jaula digital</span><span class="scene-gesture">0</span></button>
+            <button class="scene-item" data-scene="1"><span class="scene-icon"><svg viewBox="0 0 24 24"><path d="m13 2-9 11h7l-1 9 9-12h-7l1-8Z"/></svg></span><span class="scene-name">Rayos</span><span class="scene-gesture">1</span></button>
+            <button class="scene-item" data-scene="2"><span class="scene-icon"><svg viewBox="0 0 24 24"><path d="M7 3c10 3 10 15 0 18M17 3C7 6 7 18 17 21M7 7h10M7 12h10M7 17h10"/></svg></span><span class="scene-name">Doble hélice</span><span class="scene-gesture">2</span></button>
+            <button class="scene-item" data-scene="3"><span class="scene-icon"><svg viewBox="0 0 24 24"><path d="M12 21V8M12 12 6 8M12 15l6-5M12 8l-2-4M12 8l3-4M6 8 4 5M18 10l2-3"/></svg></span><span class="scene-name">Árbol fractal</span><span class="scene-gesture">3</span></button>
+            <button class="scene-item" data-scene="4"><span class="scene-icon"><svg viewBox="0 0 24 24"><path d="m5 7 5-3 4 5 5-1M5 7l2 9 7 4 5-3M10 4l-3 12M14 9l-7 7M19 8l-5 1"/></svg></span><span class="scene-name">Constelación</span><span class="scene-gesture">4</span></button>
+            <button class="scene-item" data-scene="5"><span class="scene-icon"><svg viewBox="0 0 24 24"><path d="M12 2v5m0 10v5M2 12h5m10 0h5M4.9 4.9l3.5 3.5m7.2 7.2 3.5 3.5m0-14.2-3.5 3.5m-7.2 7.2-3.5 3.5"/></svg></span><span class="scene-name">Explosión</span><span class="scene-gesture">5</span></button>
+        </div>
+        <div class="sidebar-foot"><b>Gesture Studio</b><br>Levanta los dedos para cambiar de escena.</div>
+    </aside>
+    <section id="workspace" aria-hidden="true">
+        <div id="workspace-head"><div><h1><img class="workspace-icon" src="./assets/window-scene.svg" alt="">Gesture Studio</h1><p>Un espacio vivo para explorar tus gestos.</p></div><div class="live-pill"><span class="live-dot"></span>Seguimiento activo</div></div>
+        <div id="gesture-hint"><kbd>0—5</kbd> también puedes seleccionar una escena desde la biblioteca</div>
+    </section>
     <div id="grain"></div>
     <div id="video-container">
         <video id="video" autoplay playsinline muted></video>
         <canvas id="overlay"></canvas>
+        <button id="camera-action" type="button">Activar cámara</button>
     </div>
-    <div id="status">Cargando…</div>
+    <div id="status">Cámara lista</div>
 
 <script type="module">
     import * as THREE from 'three';
@@ -369,12 +430,25 @@
 
     // ===================== STATE =====================
     const statusEl = document.getElementById('status');
+    const sceneButtons = [...document.querySelectorAll('.scene-item')];
+    const sceneNames = ['Ambiente', 'Jaula digital', 'Rayos', 'Doble hélice', 'Árbol fractal', 'Constelación', 'Explosión'];
     let cur = -99, shakeIntensity = 0, rotSpeed = {x:0,y:0,z:0};
     let noHandFrames = 0;
+
+    function selectSceneButton(f) {
+        sceneButtons.forEach(btn => btn.classList.toggle('active', Number(btn.dataset.scene) === f));
+    }
+    sceneButtons.forEach(btn => btn.addEventListener('click', () => setElement(Number(btn.dataset.scene))));
+    addEventListener('keydown', e => {
+        if (/^[0-5]$/.test(e.key)) setElement(Number(e.key));
+    });
 
     function setElement(f) {
         if (f === cur) return;
         cur = f;
+        selectSceneButton(f);
+        statusEl.textContent = f < 0 ? 'Sin mano · Ambiente' : `${sceneNames[f + 1]} · ${f} dedos`;
+        statusEl.style.color = f < 0 ? 'var(--muted)' : 'var(--accent-strong)';
         pi = 0; li = 0;
         tP.fill(0); tC.fill(0); tS.fill(0);
         tLP.fill(0); tLC.fill(0);
@@ -408,7 +482,10 @@
     // ===================== DRAW HAND =====================
     const video = document.getElementById('video');
     const overlay = document.getElementById('overlay');
+    const cameraAction = document.getElementById('camera-action');
     const ctx = overlay.getContext('2d');
+    let currentStream = null;
+    let starting = false;
     function drawHand(lm) {
         const w=overlay.width, h=overlay.height;
         ctx.fillStyle='#FFD700';
@@ -437,19 +514,35 @@
 
     // ===================== MEDIAPIPE =====================
     async function main() {
-        statusEl.textContent='Cargando…';
+        if (starting) return;
+        if (location.protocol === 'file:') {
+            statusEl.style.display = 'block';
+            statusEl.innerHTML = 'Abre la app desde un servidor local.<br><small>Ejecuta <b>npm start</b> y entra en <b>http://localhost:3000</b>.</small>';
+            cameraAction.disabled = false;
+            cameraAction.textContent = 'Abrir desde localhost';
+            return;
+        }
+        starting = true;
+        cameraAction.disabled = true;
+        cameraAction.textContent = currentStream ? 'Preparando detector…' : 'Solicitando permiso…';
+        statusEl.style.display = 'block';
+        statusEl.textContent = currentStream ? 'Preparando seguimiento…' : 'Solicitando permiso de cámara…';
+        if (!currentStream) currentStream = await navigator.mediaDevices.getUserMedia({video:{width:1920,height:1080,facingMode:'user'}});
+        if (!video.srcObject) video.srcObject = currentStream;
+        if (video.paused) await video.play();
+        overlay.width=video.videoWidth || 1280; overlay.height=video.videoHeight || 720;
+        statusEl.textContent='Preparando seguimiento…';
         const vision = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.32/wasm');
-        statusEl.textContent='Cargando...';
+        statusEl.textContent='Cargando detector…';
         let hl;
         const opts = { baseOptions:{modelAssetPath:'./models/hand_landmarker.task'}, runningMode:'VIDEO', numHands:1, minHandDetectionConfidence:0.5, minHandPresenceConfidence:0.5, minTrackingConfidence:0.4 };
         try { hl = await HandLandmarker.createFromOptions(vision, {...opts, baseOptions:{...opts.baseOptions, delegate:'GPU'}}); }
         catch { hl = await HandLandmarker.createFromOptions(vision, opts); }
 
         statusEl.textContent='Cargando';
-        const stream = await navigator.mediaDevices.getUserMedia({video:{width:1920,height:1080,facingMode:'user'}});
-        video.srcObject=stream; await video.play();
-        overlay.width=video.videoWidth; overlay.height=video.videoHeight;
         statusEl.textContent='Listo';
+        starting = false;
+        cameraAction.hidden = true;
         setTimeout(()=>statusEl.style.display='none', 2000);
         setElement(-1);
 
@@ -474,13 +567,22 @@
         }
         requestAnimationFrame(loop);
     }
-    main().catch(err => {
+    cameraAction.addEventListener('click', () => main().catch(handleCameraError));
+    function handleCameraError(err) {
         let msg=err.message;
         if (err.name==='NotAllowedError') msg='Permiso de cámara denegado.';
         if (err.name==='NotFoundError') msg='No se encontró ninguna cámara.';
+        if (err.name==='NotReadableError') msg='La cámara está siendo usada por otra aplicación.';
+        if (!msg) msg='No se pudo iniciar el seguimiento.';
+        starting = false;
+        cameraAction.disabled = false;
+        cameraAction.hidden = false;
+        cameraAction.textContent = currentStream ? 'Reintentar detector' : 'Intentar de nuevo';
         statusEl.style.display='block';
-        statusEl.innerHTML=`${msg}<br><small>Usa <b>localhost</b> o <b>HTTPS</b>.</small>`;
-    });
+        statusEl.innerHTML = currentStream
+            ? `Cámara activa · ${msg}`
+            : `${msg}<br><small>Usa <b>localhost</b> o <b>HTTPS</b>.</small>`;
+    }
 
     addEventListener('resize', () => {
         cam.aspect=innerWidth/innerHeight; cam.updateProjectionMatrix();

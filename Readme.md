@@ -41,6 +41,8 @@ npm start
 
 Abrir en el navegador: `http://localhost:3000`
 
+> Importante: no abras `index.html` haciendo doble clic (`file:///`). El navegador bloqueará el modelo de MediaPipe y el acceso a la cámara por seguridad. Inicia siempre el servidor con `npm start` y usa `http://localhost:3000`.
+
 ## Notas
 
 - El navegador pedira permiso para acceder a la camara.
